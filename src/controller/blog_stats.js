@@ -13,33 +13,28 @@ const getBlogs=async(req,res)=>{
             }
         });
 
-        res.json(response.data)
         blogsData=response.data.blogs
         
         //Lodash
-        console.log('Lodash Analytics')
+
         const Total_blogs=_.size(blogsData);
-        console.log('\nTotal number of blogs -:',Total_blogs )
 
-        const Longest_Title=_.maxBy(response.data.blogs,(blog)=>blog.title.length);
-        console.log('\nBlog with longest title:',Longest_Title);
+        const Longest_Title=_.maxBy(blogsData,(blog)=>blog.title.length);
 
-        const Total_privacy=_.filter(response.data.blogs,(blog)=>_.includes(blog.title,'Privacy')).length
-        console.log("\nTotal title with Privacy -:",Total_privacy);
+        const Total_privacy=_.filter(blogsData,(blog)=>_.includes(blog.title,'Privacy')).length
 
-        const unique_title=_.uniqBy(response.data.blogs,'title').map(blog=>blog.title);
-        console.log('\n All unique titles -: ',unique_title)
+        const unique_title=_.uniqBy(blogsData,'title').map(blog=>blog.title);
 
 
         // response to client
-        console.log('\n Response to the client')
-            let blog_response=new Object();
-            blog_response.Total_Blogs=response.data.blogs.length
-            blog_response.Longest_Title_Blog=response.data.blogs.reduce((a,b)=>(a.title.length>b.title.length ? a:b)).title;
-            total_privacy=response.data.blogs.filter(blog=>blog.title.includes("Privacy"))
+
+        let blog_response=new Object();
+            blog_response.Total_Blogs=Total_blogs
+            blog_response.Longest_Title_Blog=Longest_Title;
+            total_privacy=Total_privacy
             blog_response.Total_Privacy=total_privacy.length
-            blog_response.Unique_Title=[...new Set(response.data.blogs.map(blog=>blog.title))]
-            console.log('\n Client Response:',blog_response)   
+            blog_response.Unique_Title=unique_title
+            res.status(201).json({Client_Response:blog_response})   
  
     } catch (err) {
         console.log('Error', err)
